@@ -5,8 +5,8 @@ list
 * duplicate field values
 
 compare lists
-  * extra field values (not in majority)
-  * missing field values
+* extra field values (not in majority)
+* missing field values
   * repeated field values (across lists)
 * unique field values
 * key tally
@@ -79,5 +79,19 @@ app.extra('key', list, list2, list3)
   ['z'], // list
   [], // list2
   ['d'], // list3
+]
+
+// Find field value dupes in a single list.
+app.dupes('color', [
+    { color: 'red' },
+    { color: 'orange' },
+    { color: 'yellow' },
+    { color: 'green' },
+    { color: 'red' },
+    { color: 'green' },
+])
+[
+  'green',
+  'red',
 ]
 ```

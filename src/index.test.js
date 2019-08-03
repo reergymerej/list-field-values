@@ -108,3 +108,23 @@ describe('extra', () => {
     )
   })
 })
+
+describe('dupes', () => {
+  it('should find field value dupes in a single list', () => {
+    expect(
+      app.dupes('color', [
+        { color: 'red' },
+        { color: 'orange' },
+        { color: 'yellow' },
+        { color: 'green' },
+        { color: 'red' },
+        { color: 'green' },
+      ])
+    ).toEqual(
+      [
+        'green',
+        'red',
+      ]
+    )
+  })
+})

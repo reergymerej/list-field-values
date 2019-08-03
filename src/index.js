@@ -53,21 +53,22 @@ export const tallyUnique = (field, ...lists) => {
 const getCommonality = (field, ...lists) => {
   const t = tallyUnique(field, ...lists)
   const half = Math.ceil(lists.length / 2)
-  return Object.keys(t).reduce((acc, value) => {
-    const prop = t[value] >= half
-      ? 'common'
-      : 'uncommon'
-    return {
-      ...acc,
-      [prop]: [
-        ...acc[prop],
-        value,
-      ],
-    }
-  }, {
-    common: [],
-    uncommon: [],
-  })
+  return Object.keys(t)
+    .reduce((acc, value) => {
+      const prop = t[value] >= half
+        ? 'common'
+        : 'uncommon'
+      return {
+        ...acc,
+        [prop]: [
+          ...acc[prop],
+          value,
+        ],
+      }
+    }, {
+      common: [],
+      uncommon: [],
+    })
 }
 
 const fieldWithValue = (field, value) =>
@@ -93,8 +94,16 @@ export const extra = (field, ...lists) => {
   })
 }
 
+export const dupes = (field, ...lists) => {
+  const t = tally(field, ...lists)
+  return Object.keys(t)
+    .filter(fieldName => t[fieldName] > 1)
+    .sort()
+}
+
 export default {
   all,
+  dupes,
   extra,
   missing,
   tally,
