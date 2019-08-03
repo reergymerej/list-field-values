@@ -50,22 +50,52 @@ export const tallyUnique = (field, ...lists) => {
   )
 }
 
-export const missing = (field, ...lists) => {
+const getCommonality = (field, ...lists) => {
   const t = tallyUnique(field, ...lists)
   const half = Math.ceil(lists.length / 2)
-  const commonFields = Object.keys(t)
-    .filter(value => t[value] >= half)
+  return Object.keys(t).reduce((acc, value) => {
+    const prop = t[value] >= half
+      ? 'common'
+      : 'uncommon'
+    return {
+      ...acc,
+      [prop]: [
+        ...acc[prop],
+        value,
+      ],
+    }
+  }, {
+    common: [],
+    uncommon: [],
+  })
+}
 
+const fieldWithValue = (field, value) =>
+  row => row[field] === value
+
+export const missing = (field, ...lists) => {
+  const { common } = getCommonality(field, ...lists)
   // for each list, return missing common fields
   return lists.map((list) => {
-    return commonFields.filter(fieldName => {
-      return !list.some(row => row[field] === fieldName)
+    return common.filter(fieldName => {
+      return !list.some(fieldWithValue(field, fieldName))
+    })
+  })
+}
+
+export const extra = (field, ...lists) => {
+  const { uncommon } = getCommonality(field, ...lists)
+  // for each list, return uncommon fields
+  return lists.map((list) => {
+    return uncommon.filter(fieldName => {
+      return list.some(fieldWithValue(field, fieldName))
     })
   })
 }
 
 export default {
   all,
+  extra,
   missing,
   tally,
   tallyUnique,

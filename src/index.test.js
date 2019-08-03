@@ -94,3 +94,17 @@ describe('missing', () => {
     )
   })
 })
+
+describe('extra', () => {
+  it('should find extra fields that are in a minority of lists', () => {
+    expect(
+      app.extra('key', list, list2, list3)
+    ).toEqual(
+      [
+        ['z'], // list
+        [], // list2
+        ['d'], // list3
+      ]
+    )
+  })
+})

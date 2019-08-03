@@ -72,4 +72,12 @@ app.missing('key', list, list2, list3)
   [], // list2
   [], // list3
 ]
+
+// Find extra fields that are in a minority of lists.
+app.extra('key', list, list2, list3)
+[
+  ['z'], // list
+  [], // list2
+  ['d'], // list3
+]
 ```
