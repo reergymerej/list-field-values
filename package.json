@@ -1,5 +1,5 @@
 {
-  "name": "key-pair",
+  "name": "list-field-values",
   "version": "1.0.0",
   "main": "lib/index.js",
   "scripts": {
