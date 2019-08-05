@@ -79,6 +79,110 @@ describe('tally', () => {
       }
     )
   })
+
+  it('should tally by multiple dimensions', () => {
+    expect(
+      app.tallyDimensions(['a', 'b'], [
+        { a: 'one', b: 'two' },
+        { a: 'three', b: 'two' },
+        { a: 'one', b: 'two' },
+        { a: 'one', b: 'three' },
+        { c: 'one', b: 'two' },
+        { a: 'three', b: 'four' },
+        { a: 'three', b: 'four' },
+      ])
+    ).toEqual(
+      [
+        {
+          one: {
+            two: 2,
+            three: 1,
+          },
+          three: {
+            two: 1,
+            four: 2,
+          },
+        }
+      ]
+    )
+  })
+
+  it('should tally by 3 dimensions', () => {
+    expect(
+      app.tallyDimensions(['a', 'b', 'c'], [
+        { a: 'one', b: 'two', c: 'three' },
+        { a: 'one', b: 'two', c: 'three' },
+        { a: 'one', b: 'two', c: 'four', },
+        { a: 'one', b: 'three', c: 'three', },
+        { a: 'one', b: 'three', c: 'four', },
+        { a: 'two', b: 'two', c: 'three', },
+        { a: 'two', b: 'two', c: 'four', },
+      ])
+    ).toEqual(
+      [
+        {
+          one: {
+            two: {
+              three: 2,
+              four: 1,
+            },
+            three: {
+              three: 1,
+              four: 1,
+            },
+          },
+          two: {
+            two: {
+              three: 1,
+              four: 1,
+            },
+          },
+        }
+      ]
+    )
+  })
+
+  it('should group multiple lists by multiple dimensions', () => {
+    expect(
+      app.tallyDimensions(['type', 'color'],
+        [
+          { type: 'eyes', color: 'blue', },
+          { type: 'eyes', color: 'brown', },
+          { type: 'hair', color: 'brown', },
+        ],
+        [
+          { type: 'eyes', color: 'blue', },
+          { type: 'eyes', color: 'brown', },
+          { type: 'hair', color: 'green', },
+          { type: 'hair', color: 'green', },
+          { type: 'jeans', color: 'blue', },
+        ],
+        [
+          { type: 'eyes', color: 'blue', other: 'junk', },
+          { type: 'eyes', color: 'brown', },
+          { type: 'eyes', color: 'green', },
+          { type: 'hair', color: 'blonde', },
+          { type: 'hair', color: 'green', },
+        ],
+      )
+    ).toEqual(
+      [
+        {
+          eyes: { blue: 1, brown: 1, },
+          hair: { brown: 1, },
+        },
+        {
+          eyes: { brown: 1, blue: 1, },
+          hair: { green: 2, },
+          jeans: { blue: 1, },
+        },
+        {
+          eyes: { brown: 1, blue: 1, green: 1, },
+          hair: { blonde: 1, green: 1, },
+        },
+      ]
+    )
+  })
 })
 
 describe('missing', () => {
@@ -126,5 +230,39 @@ describe('dupes', () => {
         'red',
       ]
     )
+  })
+
+  describe('given a tally', () => {
+    it('should find duplicates', () => {
+      expect(
+        app.dupesFromTally({
+          foo: 1,
+          boo: 2,
+          blarg: 1,
+          forst: 5,
+        })
+      ).toEqual(
+        {
+          boo: 2,
+          forst: 5,
+        }
+      )
+    })
+
+    it('should find duplicates in multi-dimensional tallies', () => {
+      expect(
+        app.dupesFromTally({
+          one: { two: 2, three: 1, },
+          three: { two: 1, four: 2, },
+          green: { goose: 1, chicken: 3, },
+        })
+      ).toEqual(
+        {
+          one: { two: 2, },
+          three: { four: 2, },
+          green: { chicken: 3, },
+        }
+      )
+    })
   })
 })

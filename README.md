@@ -1,4 +1,5 @@
 # list-field-values
+[![Build Status](https://travis-ci.com/reergymerej/list-field-values.svg?branch=master)](https://travis-ci.com/reergymerej/list-field-values)
 
 list
 * unique field values
@@ -94,4 +95,79 @@ app.dupes('color', [
   'green',
   'red',
 ]
+
+// Find field value dupes in a list, across two dimensions.
+app.dupes(['type', 'color'],
+  [
+    { type: 'eyes', color: 'blue', other: 'junk', },
+    { type: 'eyes', color: 'blue', },
+    { type: 'eyes', color: 'green', },
+    { type: 'hair', color: 'blonde', },
+    { type: 'hair', color: 'green', },
+  ]
+)
+[
+  {
+    type: 'eyes',
+    color: 'blue',
+  },
+]
+
+
+
+// Tally by multiple dimensions
+app.tallyDimensions(['a', 'b'], [
+  { a: 'one', b: 'three' },
+  { a: 'one', b: 'two' },
+  { a: 'one', b: 'two' },
+  { a: 'three', b: 'four' },
+  { a: 'three', b: 'four' },
+  { a: 'three', b: 'two' },
+  { c: 'one', b: 'two' },
+])
+[
+  {
+    one: { two: 2, three: 1, },
+    three: { two: 1, four: 2, },
+  },
+]
+
+
+app.tallyDimensions(['type', 'color'],
+  [
+    { type: 'eyes', color: 'blue', },
+    { type: 'eyes', color: 'brown', },
+    { type: 'hair', color: 'brown', },
+  ],
+  [
+    { type: 'eyes', color: 'blue', },
+    { type: 'eyes', color: 'brown', },
+    { type: 'hair', color: 'green', },
+    { type: 'hair', color: 'green', },
+    { type: 'jeans', color: 'blue', },
+  ],
+  [
+    { type: 'eyes', color: 'blue', other: 'junk', },
+    { type: 'eyes', color: 'brown', },
+    { type: 'eyes', color: 'green', },
+    { type: 'hair', color: 'blonde', },
+    { type: 'hair', color: 'green', },
+  ],
+)
+[
+  {
+    eyes: { blue: 1, brown: 1, },
+    hair: { brown: 1, },
+  },
+  {
+    eyes: { brown: 1, blue: 1, },
+    hair: { green: 2, },
+    jeans: { blue: 1, },
+  },
+  {
+    eyes: { brown: 1, blue: 1, green: 1, },
+    hair: { blonde: 1, green: 1, },
+  },
+]
+
 ```

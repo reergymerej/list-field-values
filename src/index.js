@@ -101,12 +101,71 @@ export const dupes = (field, ...lists) => {
     .sort()
 }
 
+const hasAllFields = (fields) => (row) => {
+  return fields.every((field) => {
+    return row.hasOwnProperty(field)
+  })
+}
+
+const initialize = (obj, field, value) => {
+  if (!obj.hasOwnProperty(field)) {
+    obj[field] = value
+  }
+  return obj
+}
+
+export const tallyDimensions = (fields, ...lists) => {
+  return lists.map((list) => {
+    const result = {}
+
+    list
+      .filter(hasAllFields(fields))
+      .forEach((row) => {
+        let pointer = result
+        fields
+          .forEach((field, i, _all) => {
+            const fieldValue = row[field]
+            const isTerminal = i === _all.length - 1
+            if (!isTerminal) {
+              pointer = initialize(pointer, fieldValue, {})
+              pointer = pointer[fieldValue]
+            } else {
+              pointer = initialize(pointer, fieldValue, 0)
+              pointer[fieldValue] = pointer[fieldValue] + 1
+            }
+          })
+      })
+
+    return result
+  })
+}
+
+const isObject = x =>
+  Object.prototype.toString.apply(x) === '[object Object]'
+
+export const dupesFromTally = (t) => {
+  return Object.keys(t).reduce((acc, key) => {
+    const count = t[key]
+    if (count === 1) {
+      return acc
+    }
+    return {
+      ...acc,
+      [key]: isObject(count)
+        ? dupesFromTally(count)
+        : count
+    }
+  }, {})
+}
+
 export default {
   all,
   dupes,
+  dupesFromTally,
   extra,
   missing,
   tally,
+  tallyDimensions,
   tallyUnique,
   unique,
 }
